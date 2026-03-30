@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Register — Campus L&F{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-ico">🎓</div>
+      <h1>Create Account</h1>
+      <p>Join the Campus Lost &amp; Found system</p>
+    </div>
+    <form method="POST" action="{{ url_for('register') }}">
+      <div class="fg">
+        <label>Username</label>
+        <div class="iw">
+          <span class="ic">👤</span>
+          <input type="text" name="username" placeholder="Choose a username" required minlength="3" autofocus/>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Email Address</label>
+        <div class="iw">
+          <span class="ic">📧</span>
+          <input type="email" name="email" placeholder="your@college.edu" required/>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Password</label>
+        <div class="iw">
+          <span class="ic">🔑</span>
+          <input type="password" name="password" placeholder="Create a password" required minlength="6"/>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Confirm Password</label>
+        <div class="iw">
+          <span class="ic">🔒</span>
+          <input type="password" name="confirm_password" placeholder="Repeat password" required/>
+        </div>
+      </div>
+      <div class="mt-16">
+        <button class="btn btn-primary btn-full btn-lg">Create Account →</button>
+      </div>
+    </form>
+    <p class="text-muted text-sm mt-16" style="text-align:center">
+      Already have an account? <a href="{{ url_for('login') }}" style="font-weight:600">Sign in</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

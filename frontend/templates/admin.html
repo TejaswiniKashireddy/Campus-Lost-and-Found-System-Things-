@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Admin Panel — Campus L&F{% endblock %}
+{% block content %}
+<div class="page">
+
+  <div class="admin-banner">
+    <div style="font-size:30px">🛡️</div>
+    <div>
+      <h1>Admin Panel</h1>
+      <p>Manage all users and item posts on the platform</p>
+    </div>
+    <div class="flex gap-12" style="margin-left:auto">
+      <div class="admin-stat"><div class="as-n">{{ users|length }}</div><div class="as-l">Users</div></div>
+      <div class="admin-stat"><div class="as-n">{{ items|length }}</div><div class="as-l">Items</div></div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('users', this)">👥 Users ({{ users|length }})</button>
+    <button class="tab-btn"        onclick="switchTab('items', this)">📦 All Items ({{ items|length }})</button>
+  </div>
+
+  <!-- Users tab -->
+  <div id="tab-users" class="tab-panel active">
+    <div class="posts-table">
+      <div class="t-head" style="grid-template-columns:48px 1fr 1fr 88px 88px 108px">
+        <div>#</div><div>Username</div><div>Email</div><div>Posts</div><div>Role</div><div>Joined</div>
+      </div>
+      {% for u in users %}
+      <div class="t-row" style="grid-template-columns:48px 1fr 1fr 88px 88px 108px">
+        <div class="text-muted" style="font-weight:600">{{ u.id }}</div>
+        <div style="font-weight:700">{{ u.username }}</div>
+        <div class="text-muted text-sm">{{ u.email }}</div>
+        <div><span class="badge b-open">{{ u.post_count }} posts</span></div>
+        <div>
+          {% if u.is_admin %}
+          <span class="badge b-admin">Admin</span>
+          {% else %}
+          <span class="badge" style="background:var(--surface2);color:var(--muted)">Student</span>
+          {% endif %}
+        </div>
+        <div class="text-muted text-sm">{{ u.created_at[:10] if u.created_at else '—' }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Items tab -->
+  <div id="tab-items" class="tab-panel">
+    <div class="posts-table">
+      <div class="t-head" style="grid-template-columns:1fr 88px 150px 88px 108px">
+        <div>Item</div><div>Type</div><div>Location</div><div>Status</div><div>Actions</div>
+      </div>
+      {% for item in items %}
+      <div class="t-row" style="grid-template-columns:1fr 88px 150px 88px 108px">
+        <div>
+          <div style="font-weight:700;font-size:.88rem">{{ item.title }}</div>
+          <div class="text-muted text-sm">by {{ item.username }} · {{ item.date }}</div>
+        </div>
+        <div><span class="badge {% if item.type=='lost' %}b-lost{% else %}b-found{% endif %}">{{ item.type|upper }}</span></div>
+        <div class="text-muted text-sm">{{ item.location }}</div>
+        <div><span class="badge {% if item.status=='recovered' %}b-rec{% else %}b-open{% endif %}">{{ item.status|title }}</span></div>
+        <div class="row-actions">
+          <a href="{{ url_for('item_details', item_id=item.id) }}" class="btn btn-outline btn-sm">View</a>
+          <form method="POST" action="{{ url_for('delete_item', item_id=item.id) }}"
+                onsubmit="return confirm('Delete this post?')">
+            <button class="btn btn-danger btn-sm">🗑️</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+{% endblock %}

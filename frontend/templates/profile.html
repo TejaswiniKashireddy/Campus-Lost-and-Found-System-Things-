@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Profile — Campus L&F{% endblock %}
+{% block content %}
+<div class="page">
+
+  <h1 style="font-size:1.5rem;font-weight:800;margin-bottom:22px">👤 My Profile</h1>
+
+  <div class="profile-layout">
+
+    <!-- Profile card -->
+    <div class="profile-card">
+      <div class="profile-avatar">{{ user.username[0].upper() }}</div>
+      <h2>{{ user.username }}</h2>
+      <p class="p-email">{{ user.email }}</p>
+      {% if user.is_admin %}
+      <span class="badge b-admin">🛡️ Administrator</span>
+      {% endif %}
+      <div class="p-stats">
+        <div class="ps-box"><div class="ps-n">{{ post_count }}</div><div class="ps-l">Total</div></div>
+        <div class="ps-box"><div class="ps-n">{{ lost_count }}</div><div class="ps-l">Lost</div></div>
+        <div class="ps-box"><div class="ps-n">{{ found_count }}</div><div class="ps-l">Found</div></div>
+      </div>
+      <p class="text-muted text-sm"
+         style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+        📅 Member since {{ user.created_at[:10] if user.created_at else 'N/A' }}
+      </p>
+    </div>
+
+    <!-- Right column -->
+    <div>
+      <!-- Account info -->
+      <div class="info-card">
+        <h3>Account Information</h3>
+        <div class="info-rows">
+          {% for icon, label, value in [
+              ('👤','Username', user.username),
+              ('📧','Email',    user.email),
+              ('🔰','Role',     'Administrator' if user.is_admin else 'Student')
+          ] %}
+          <div class="info-row">
+            <span class="info-icon">{{ icon }}</span>
+            <div>
+              <div class="info-label">{{ label }}</div>
+              <div class="info-value">{{ value }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="info-card" style="margin-top:18px">
+        <h3>Quick Actions</h3>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <a href="{{ url_for('my_posts') }}"                        class="btn btn-outline"  style="justify-content:flex-start">📋 View My Posts</a>
+          <a href="{{ url_for('post_item', item_type='lost') }}"     class="btn btn-danger"   style="justify-content:flex-start">📍 Report Lost Item</a>
+          <a href="{{ url_for('post_item', item_type='found') }}"    class="btn btn-success"  style="justify-content:flex-start">✅ Report Found Item</a>
+          {% if user.is_admin %}
+          <a href="{{ url_for('admin') }}"                           class="btn b-admin-btn"  style="justify-content:flex-start">🛡️ Admin Panel</a>
+          {% endif %}
+          <a href="{{ url_for('logout') }}"                          class="btn btn-outline"  style="justify-content:flex-start;color:var(--lost-c)">🚪 Logout</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
