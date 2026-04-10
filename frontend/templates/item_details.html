@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% block title %}{{ item.title }} — Campus L&F{% endblock %}
+{% block content %}
+<div class="page">
+
+  <!-- Breadcrumb -->
+  <div class="flex gap-8" style="margin-bottom:18px;font-size:.875rem;color:var(--muted)">
+    <a href="{{ url_for('home') }}">🏠 Home</a>
+    <span>›</span>
+    <span class="badge {% if item.type=='lost' %}b-lost{% else %}b-found{% endif %}">{{ item.type|upper }}</span>
+    <span>›</span>
+    <span>{{ item.title }}</span>
+  </div>
+
+  <div class="detail-layout">
+
+    <!-- Main card -->
+    <div class="detail-card">
+      <div class="detail-img">
+        {% if item.image %}
+        <img src="{{ url_for('uploaded_file', filename=item.image) }}" alt="{{ item.title }}"/>
+        {% else %}
+        <div class="detail-ph">
+          <div style="font-size:58px">{% if item.type=='lost' %}😢{% else %}📦{% endif %}</div>
+          <span style="font-size:.875rem;color:var(--muted)">No image provided</span>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="detail-body">
+        <div class="flex gap-8">
+          <span class="badge {% if item.type=='lost' %}b-lost{% else %}b-found{% endif %}">
+            {% if item.type=='lost' %}📍 LOST{% else %}✅ FOUND{% endif %}
+          </span>
+          <span class="badge {% if item.status=='recovered' %}b-rec{% else %}b-open{% endif %}">
+            {% if item.status=='recovered' %}✅ Recovered{% else %}🔓 Open{% endif %}
+          </span>
+        </div>
+
+        <h1>{{ item.title }}</h1>
+
+        <div class="detail-meta">
+          <div class="dm"><div class="dm-l">📍 Location</div><div class="dm-v">{{ item.location }}</div></div>
+          <div class="dm"><div class="dm-l">📅 Date</div><div class="dm-v">{{ item.date }}</div></div>
+          <div class="dm"><div class="dm-l">👤 Posted By</div><div class="dm-v">{{ item.username }}</div></div>
+          <div class="dm"><div class="dm-l">🕐 Posted On</div><div class="dm-v">{{ item.created_at[:10] }}</div></div>
+        </div>
+
+        {% if item.description %}
+        <div class="detail-desc">
+          <strong style="font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)">Description</strong>
+          <p style="margin-top:7px">{{ item.description }}</p>
+        </div>
+        {% endif %}
+
+        {% if session.get('user_id') == item.user_id %}
+        <div class="flex gap-8 mt-20">
+          <form method="POST" action="{{ url_for('toggle_status', item_id=item.id) }}">
+            <button class="btn {% if item.status=='open' %}btn-success{% else %}btn-outline{% endif %} btn-sm">
+              {% if item.status=='open' %}✅ Mark Recovered{% else %}🔓 Mark Open{% endif %}
+            </button>
+          </form>
+          <form method="POST" action="{{ url_for('delete_item', item_id=item.id) }}"
+                onsubmit="return confirm('Delete this post?')">
+            <button class="btn btn-danger btn-sm">🗑️ Delete</button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+      <div class="contact-card">
+        <h3>📞 Contact Information</h3>
+        <p class="text-muted text-sm" style="margin-bottom:11px">
+          {% if item.type=='lost' %}
+          This person is looking for their item. Contact them if you found it!
+          {% else %}
+          This person found this item. Reach out to claim it.
+          {% endif %}
+        </p>
+        <div class="contact-info">{{ item.contact }}</div>
+        {% if session.get('user_id') %}
+        <a href="mailto:{{ item.email }}" class="btn btn-primary btn-full" style="margin-bottom:8px">📧 Email Poster</a>
+        {% else %}
+        <a href="{{ url_for('login') }}" class="btn btn-primary btn-full">Login to Contact</a>
+        {% endif %}
+      </div>
+
+      <div class="contact-card mt-16">
+        <h3>ℹ️ Quick Info</h3>
+        <div style="display:flex;flex-direction:column;gap:9px;font-size:.875rem">
+          <div class="flex gap-8">
+            <span class="text-muted" style="width:76px;flex-shrink:0">Type</span>
+            <span class="badge {% if item.type=='lost' %}b-lost{% else %}b-found{% endif %}">{{ item.type|upper }}</span>
+          </div>
+          <div class="flex gap-8">
+            <span class="text-muted" style="width:76px;flex-shrink:0">Status</span>
+            <span class="badge {% if item.status=='recovered' %}b-rec{% else %}b-open{% endif %}">{{ item.status|title }}</span>
+          </div>
+          <div class="flex gap-8">
+            <span class="text-muted" style="width:76px;flex-shrink:0">Location</span>
+            <span>{{ item.location }}</span>
+          </div>
+          <div class="flex gap-8">
+            <span class="text-muted" style="width:76px;flex-shrink:0">Date</span>
+            <span>{{ item.date }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-16">
+        <a href="{{ url_for('home') }}" class="btn btn-outline btn-full">← Back to Home</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
