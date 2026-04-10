@@ -1,8 +1,7 @@
 """
 run.py  —  Start the Campus Lost & Found System (MongoDB edition)
-─────────────────────────────────────────────────────────────────
-Just run:  python run.py
 """
+
 import subprocess, sys, os
 
 # Auto-install dependencies if missing
@@ -21,9 +20,8 @@ from backend.app import app, init_db
 
 if __name__ == "__main__":
     init_db()
-    print("\n✅  Campus Lost & Found is running!")
-    print("🌐  Open your browser: http://127.0.0.1:5000")
-    print("🍃  MongoDB: mongodb://localhost:27017/campus_lnf")
-    print("🔐  Admin login  →  username: admin  |  password: admin123")
-    print("    Press Ctrl+C to stop.\n")
-    app.run(debug=True, use_reloader=False)
+    print("\n✅ Campus Lost & Found is running!")
+    
+    # 🔥 IMPORTANT CHANGE FOR DEPLOYMENT
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
