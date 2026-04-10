@@ -359,8 +359,11 @@ def admin():
 
 
 # ── Image save helper (defined after app) ─────────────────────────────────────
+<<<<<<< HEAD
 def allowed(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXT
+=======
+>>>>>>> 4a746e126a9b2ae25269d7e28a29f7abc1bf82c4
 
 def save_image(file):
     if file and file.filename and allowed(file.filename):
