@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Post {{ item_type|title }} Item — Campus L&F{% endblock %}
+{% block content %}
+<div class="page">
+  <div class="form-card">
+
+    <div class="fc-head">
+      <div class="flex gap-8" style="margin-bottom:8px">
+        <span class="badge {% if item_type=='lost' %}b-lost{% else %}b-found{% endif %}">{{ item_type|upper }} ITEM</span>
+      </div>
+      {% if item_type == 'lost' %}
+      <h1>📍 Report a Lost Item</h1>
+      <p>Provide details so others can identify and return your item.</p>
+      {% else %}
+      <h1>✅ Report a Found Item</h1>
+      <p>Describe what you found so the rightful owner can claim it.</p>
+      {% endif %}
+    </div>
+
+    <form method="POST" enctype="multipart/form-data"
+          action="{{ url_for('post_item', item_type=item_type) }}">
+      <div class="fc-body">
+
+        <div class="fg">
+          <label>Item Name *</label>
+          <input type="text" name="title"
+                 placeholder="e.g. Blue Campus ID Card, Black Wallet, iPhone 14"
+                 required autofocus/>
+        </div>
+
+        <div class="fg">
+          <label>Description *</label>
+          <textarea name="description"
+                    placeholder="Describe the item: colour, brand, any marks, stickers or distinguishing features…"
+                    required></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="fg">
+            <label>{% if item_type=='lost' %}Location Where Lost *{% else %}Location Where Found *{% endif %}</label>
+            <div class="iw">
+              <span class="ic">📍</span>
+              <input type="text" name="location"
+                     placeholder="e.g. Library 2nd Floor, Canteen, Block B" required/>
+            </div>
+          </div>
+          <div class="fg">
+            <label>{% if item_type=='lost' %}Date Lost *{% else %}Date Found *{% endif %}</label>
+            <input type="date" name="date" value="{{ today }}" max="{{ today }}" required/>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label>Contact Information *</label>
+          <div class="iw">
+            <span class="ic">📞</span>
+            <input type="text" name="contact"
+                   placeholder="Phone number, email, or WhatsApp" required/>
+          </div>
+        </div>
+
+        <div class="fg">
+          <label>Item Photo (optional)</label>
+          <div class="upload-zone" id="uploadZone"
+               onclick="document.getElementById('imgInput').click()">
+            <input type="file" id="imgInput" name="image"
+                   accept="image/*" onchange="previewImg(this)"/>
+            <div id="upContent">
+              <div class="u-ico">📸</div>
+              <p>Click or drag &amp; drop a photo here</p>
+              <span>PNG, JPG, GIF — up to 5 MB</span>
+            </div>
+            <div id="imgPreview" style="display:none">
+              <img id="prevImg" src="" alt="Preview"
+                   style="max-height:150px;border-radius:8px;margin:0 auto"/>
+              <p style="font-size:.78rem;color:var(--muted);margin-top:6px">Click to change</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="fc-foot">
+        <button type="submit"
+                class="btn {% if item_type=='lost' %}btn-danger{% else %}btn-success{% endif %} btn-lg">
+          {% if item_type == 'lost' %}📍 Submit Lost Report{% else %}✅ Submit Found Report{% endif %}
+        </button>
+        <a href="{{ url_for('home') }}" class="btn btn-outline">Cancel</a>
+        <span class="text-muted text-sm" style="margin-left:auto">* Required</span>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

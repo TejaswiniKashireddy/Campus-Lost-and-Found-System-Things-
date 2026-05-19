@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>{% block title %}Campus Lost & Found{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎒</text></svg>"/>
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<nav class="navbar">
+  <a class="nav-brand" href="{{ url_for('home') }}">
+    <div class="brand-ico">🎒</div>
+    Campus L&amp;F
+  </a>
+
+  {% if session.get('user_id') %}
+  <ul class="nav-links">
+    <li><a href="{{ url_for('home') }}"     {% if request.endpoint=='home'     %}class="active"{% endif %}>🏠 Home</a></li>
+    <li><a href="{{ url_for('post_item', item_type='lost') }}"  class="nl">📍 Post Lost</a></li>
+    <li><a href="{{ url_for('post_item', item_type='found') }}" class="nf">✅ Post Found</a></li>
+    <li><a href="{{ url_for('my_posts') }}" {% if request.endpoint=='my_posts' %}class="active"{% endif %}>📋 My Posts</a></li>
+    {% if session.get('is_admin') == 1 %}
+    <li><a href="{{ url_for('admin') }}"    {% if request.endpoint=='admin'    %}class="active"{% endif %}>🛡️ Admin</a></li>
+    {% endif %}
+    <li>
+      <a href="{{ url_for('profile') }}" class="nav-user">
+        <span class="avatar">{{ session.get('username','U')[0].upper() }}</span>
+        {{ session.get('username') }}
+      </a>
+    </li>
+    <li><a href="{{ url_for('logout') }}" class="nx">🚪 Logout</a></li>
+  </ul>
+  {% else %}
+  <ul class="nav-links">
+    <li><a href="{{ url_for('login') }}">Login</a></li>
+    <li><a href="{{ url_for('register') }}" class="btn btn-primary btn-sm">Register</a></li>
+  </ul>
+  {% endif %}
+</nav>
+
+<!-- ── Flash messages ── -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-wrap" id="flashWrap">
+  {% for cat, msg in messages %}
+  <div class="flash {{ cat }}">
+    <span>{% if cat=='success' %}✅{% elif cat=='danger' %}❌{% elif cat=='warning' %}⚠️{% else %}ℹ️{% endif %}</span>
+    {{ msg }}
+    <span class="flash-x" onclick="this.parentElement.remove()">×</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<!-- ── Page content ── -->
+{% block content %}{% endblock %}
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

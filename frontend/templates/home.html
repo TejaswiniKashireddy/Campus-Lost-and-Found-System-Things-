@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% block title %}Home — Campus Lost & Found{% endblock %}
+{% block content %}
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-text">
+      <h1>Campus Lost &amp; Found</h1>
+      <p>Lost something on campus? Found an item? Post it here and help your fellow students.</p>
+      {% if not session.get('user_id') %}
+      <div class="flex gap-8 mt-16">
+        <a href="{{ url_for('register') }}" class="btn" style="background:#fff;color:var(--primary);font-weight:700;">Get Started Free</a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline" style="border-color:rgba(255,255,255,.4);color:#fff;">Login</a>
+      </div>
+      {% endif %}
+    </div>
+    <div class="hero-stats">
+      <div class="stat-box"><div class="stat-n">{{ stats.total_lost }}</div><div class="stat-l">Items Lost</div></div>
+      <div class="stat-box"><div class="stat-n">{{ stats.total_found }}</div><div class="stat-l">Items Found</div></div>
+      <div class="stat-box"><div class="stat-n">{{ stats.total_users }}</div><div class="stat-l">Students</div></div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <form method="GET" action="{{ url_for('home') }}">
+    <div class="search-bar">
+      <div class="iw" style="flex:1">
+        <span class="ic">🔍</span>
+        <input type="text" name="q" value="{{ q }}" placeholder="Search by item name…"/>
+      </div>
+      <div class="search-div"></div>
+      <div class="iw" style="flex:1">
+        <span class="ic">📍</span>
+        <input type="text" name="location" value="{{ loc }}" placeholder="Filter by location…"/>
+      </div>
+      <button type="submit" class="btn btn-primary" style="flex-shrink:0">Search</button>
+      {% if q or loc %}
+      <a href="{{ url_for('home') }}" class="btn btn-outline" style="flex-shrink:0">Clear</a>
+      {% endif %}
+    </div>
+  </form>
+
+  {% if session.get('user_id') %}
+  <div class="flex gap-12" style="margin-bottom:28px">
+    <a href="{{ url_for('post_item', item_type='lost') }}"  class="btn btn-danger  btn-lg">📍 Report Lost Item</a>
+    <a href="{{ url_for('post_item', item_type='found') }}" class="btn btn-success btn-lg">✅ Report Found Item</a>
+  </div>
+  {% endif %}
+
+  <!-- Lost Items -->
+  <div class="sec-hdr">
+    <div class="sec-title">
+      <span style="font-size:20px">😢</span>
+      <h2>Lost Items</h2>
+      <span class="badge b-lost">{{ lost_items|length }}</span>
+    </div>
+    {% if session.get('user_id') %}
+    <a href="{{ url_for('post_item', item_type='lost') }}" class="btn btn-danger btn-sm">+ Post Lost</a>
+    {% endif %}
+  </div>
+
+  {% if lost_items %}
+  <div class="cards-grid">
+    {% for item in lost_items %}
+    <a href="{{ url_for('item_details', item_id=item.id) }}" class="item-card">
+      <div class="card-img">
+        {% if item.image %}
+        <img src="{{ url_for('uploaded_file', filename=item.image) }}" alt="{{ item.title }}" loading="lazy"/>
+        {% else %}
+        <div class="card-ph"><div class="ph-ico">🎒</div><span>No image</span></div>
+        {% endif %}
+        <div class="card-type"><span class="badge b-lost">LOST</span></div>
+        {% if item.status == 'recovered' %}
+        <div class="card-status"><span class="badge b-rec">✅ Recovered</span></div>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="card-title">{{ item.title }}</div>
+        <div class="card-meta">
+          <div class="meta-row"><span class="ic">📍</span>{{ item.location }}</div>
+          <div class="meta-row"><span class="ic">📅</span>{{ item.date }}</div>
+          <div class="meta-row"><span class="ic">👤</span>{{ item.username }}</div>
+        </div>
+        <div class="card-foot"><span class="btn btn-danger btn-sm">View Details</span></div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-ico">😮</div>
+    <h3>No lost items found</h3>
+    <p>{% if q or loc %}No results match your search.{% else %}Nothing reported lost yet!{% endif %}</p>
+  </div>
+  {% endif %}
+
+  <div class="divider"></div>
+
+  <!-- Found Items -->
+  <div class="sec-hdr">
+    <div class="sec-title">
+      <span style="font-size:20px">🎉</span>
+      <h2>Found Items</h2>
+      <span class="badge b-found">{{ found_items|length }}</span>
+    </div>
+    {% if session.get('user_id') %}
+    <a href="{{ url_for('post_item', item_type='found') }}" class="btn btn-success btn-sm">+ Post Found</a>
+    {% endif %}
+  </div>
+
+  {% if found_items %}
+  <div class="cards-grid">
+    {% for item in found_items %}
+    <a href="{{ url_for('item_details', item_id=item.id) }}" class="item-card">
+      <div class="card-img">
+        {% if item.image %}
+        <img src="{{ url_for('uploaded_file', filename=item.image) }}" alt="{{ item.title }}" loading="lazy"/>
+        {% else %}
+        <div class="card-ph"><div class="ph-ico">📦</div><span>No image</span></div>
+        {% endif %}
+        <div class="card-type"><span class="badge b-found">FOUND</span></div>
+        {% if item.status == 'recovered' %}
+        <div class="card-status"><span class="badge b-rec">✅ Returned</span></div>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="card-title">{{ item.title }}</div>
+        <div class="card-meta">
+          <div class="meta-row"><span class="ic">📍</span>{{ item.location }}</div>
+          <div class="meta-row"><span class="ic">📅</span>{{ item.date }}</div>
+          <div class="meta-row"><span class="ic">👤</span>{{ item.username }}</div>
+        </div>
+        <div class="card-foot"><span class="btn btn-success btn-sm">View Details</span></div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-ico">📭</div>
+    <h3>No found items yet</h3>
+    <p>{% if q or loc %}No found items match your search.{% else %}Be the first to report a found item!{% endif %}</p>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

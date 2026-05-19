@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}My Posts — Campus L&F{% endblock %}
+{% block content %}
+<div class="page">
+
+  <div class="sec-hdr" style="margin-bottom:22px">
+    <div>
+      <h1 style="font-size:1.5rem;font-weight:800">📋 My Posts</h1>
+      <p class="text-muted text-sm mt-4">All items you have reported on the platform</p>
+    </div>
+    <div class="flex gap-8">
+      <a href="{{ url_for('post_item', item_type='lost') }}"  class="btn btn-danger  btn-sm">+ Post Lost</a>
+      <a href="{{ url_for('post_item', item_type='found') }}" class="btn btn-success btn-sm">+ Post Found</a>
+    </div>
+  </div>
+
+  {% if items %}
+  <div class="posts-table">
+    <div class="t-head">
+      <div>Photo</div>
+      <div>Item</div>
+      <div>Type</div>
+      <div>Location</div>
+      <div>Status</div>
+      <div>Actions</div>
+    </div>
+    {% for item in items %}
+    <div class="t-row">
+      <div>
+        {% if item.image %}
+        <img class="t-thumb"
+             src="{{ url_for('uploaded_file', filename=item.image) }}" alt=""/>
+        {% else %}
+        <div class="t-thumb-ph">{% if item.type=='lost' %}📍{% else %}📦{% endif %}</div>
+        {% endif %}
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:.88rem">{{ item.title }}</div>
+        <div class="text-muted text-sm">{{ item.date }}</div>
+      </div>
+      <div><span class="badge {% if item.type=='lost' %}b-lost{% else %}b-found{% endif %}">{{ item.type|upper }}</span></div>
+      <div class="text-muted text-sm">{{ item.location }}</div>
+      <div><span class="badge {% if item.status=='recovered' %}b-rec{% else %}b-open{% endif %}">{{ item.status|title }}</span></div>
+      <div class="row-actions">
+        <a href="{{ url_for('item_details', item_id=item.id) }}" class="btn btn-outline btn-sm">View</a>
+        <form method="POST" action="{{ url_for('toggle_status', item_id=item.id) }}">
+          <button class="btn btn-success btn-sm" title="Toggle status">
+            {% if item.status=='open' %}✅{% else %}🔓{% endif %}
+          </button>
+        </form>
+        <form method="POST" action="{{ url_for('delete_item', item_id=item.id) }}"
+              onsubmit="return confirm('Delete this post permanently?')">
+          <button class="btn btn-danger btn-sm">🗑️</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-ico">📭</div>
+    <h3>No posts yet</h3>
+    <p>You haven't reported any lost or found items yet.</p>
+    <div class="flex gap-12" style="justify-content:center;margin-top:16px">
+      <a href="{{ url_for('post_item', item_type='lost') }}"  class="btn btn-danger">📍 Report Lost Item</a>
+      <a href="{{ url_for('post_item', item_type='found') }}" class="btn btn-success">✅ Report Found Item</a>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
